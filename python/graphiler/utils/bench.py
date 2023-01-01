@@ -5,6 +5,7 @@ import pandas as pd
 
 from dgl import DGLError
 from torch.cuda import profiler, synchronize, memory_allocated, max_memory_allocated, reset_peak_memory_stats
+from torch.profiler import profile, ProfilerActivity, schedule 
 
 
 def check_equal(first, second):
@@ -18,6 +19,11 @@ def check_equal(first, second):
 
 def bench(net, net_params, tag="", nvprof=False, memory=False, repeat=1000, log=None):
     try:
+        # with profile(activities=[ProfilerActivity.CUDA], schedule=schedule(wait=0, warmup=10, active=100), record_shapes=True) as prof:
+        #     for _ in range(100):
+        #         net(*net_params)
+        #         prof.step()
+        # print(prof.key_averages())
         # warm up
         for i in range(5):
             net(*net_params)
@@ -40,7 +46,8 @@ def bench(net, net_params, tag="", nvprof=False, memory=False, repeat=1000, log=
                 max_memory_allocated() - memory_offset) / 1048576
             print("intermediate data memory usage: {} MB".format(max_mem_consumption))
             log.at[tag, "mem"] = max_mem_consumption
-    except (RuntimeError, DGLError):
+    except (RuntimeError, DGLError) as e:
+        print(e)
         print("{} OOM".format(tag))
         return None
     except BaseException as e:

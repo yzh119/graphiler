@@ -7,7 +7,8 @@
 #include "functor.cuh"
 #include "spmm.cuh"
 #include <ATen/cuda/CUDAContext.h>
-#include <THC/THC.h>
+//#include <THC/THC.h>
+#include <ATen/ATen.h>
 #include <cusparse_v2.h>
 #include <torch/torch.h>
 
@@ -367,7 +368,7 @@ torch::Tensor SpMMEdge(torch::Tensor features, std::vector<int64_t> dims,
   std::vector<at::Tensor> empty_list;
   empty_list.push_back(empty);
   dgl::aten::SpMMCsr<int32_t, 32>(
-      "copy_lhs", "sum", graph->num_nodes, graph->num_nodes, graph->in_pointer,
+      "copy_lhs", "sum", graph->num_nodes, graph->num_edges, graph->in_pointer,
       graph->in_edge_indices, empty, features, empty, out, empty_list);
   return out;
 }

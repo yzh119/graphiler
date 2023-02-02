@@ -7,6 +7,7 @@ from ogb.nodeproppred import DglNodePropPredDataset
 from ogb.linkproppred import DglLinkPropPredDataset
 
 import dgl
+import os
 from dgl.data.rdf import AIFBDataset, MUTAGDataset, BGSDataset, AMDataset
 
 DEFAULT_DIM = 64
@@ -20,11 +21,15 @@ hetero_dataset = ["aifb", "mutag", "bgs", "biokg", "am"]
 
 
 def load_data(name, feat_dim=DEFAULT_DIM, prepare=True, to_homo=True):
+    home = os.path.expanduser("~")
+    ogb_path = os.path.join(home, "ogb")
+    if not os.path.exists(ogb_path):
+        os.makedirs(ogb_path) 
     if name == "arxiv":
-        dataset = DglNodePropPredDataset(name="ogbn-arxiv")
+        dataset = DglNodePropPredDataset(name="ogbn-arxiv", root=ogb_path)
         g = dataset[0][0]
     elif name == "proteins":
-        dataset = DglNodePropPredDataset(name="ogbn-proteins")
+        dataset = DglNodePropPredDataset(name="ogbn-proteins", root=ogb_path)
         g = dataset[0][0]
     elif name == "reddit":
         dataset = dgl.data.RedditDataset()
@@ -53,10 +58,10 @@ def load_data(name, feat_dim=DEFAULT_DIM, prepare=True, to_homo=True):
         dataset = AMDataset()
         g = dataset[0]
     elif name == "mag":
-        dataset = DglNodePropPredDataset(name="ogbn-mag")
+        dataset = DglNodePropPredDataset(name="ogbn-mag", root=ogb_path)
         g = dataset[0][0]
     elif name == "wikikg2":
-        dataset = DglLinkPropPredDataset(name='ogbl-wikikg2')
+        dataset = DglLinkPropPredDataset(name='ogbl-wikikg2', root=ogb_path)
         g = dataset[0]
         src, dst = g.edges()
         reltype = torch.flatten(g.edata['reltype']).cuda()
@@ -68,7 +73,7 @@ def load_data(name, feat_dim=DEFAULT_DIM, prepare=True, to_homo=True):
                 torch.flatten(src[type_index]), torch.flatten(dst[type_index]))
         g = dgl.heterograph(hetero_dict)
     elif name == "biokg":
-        dataset = DglLinkPropPredDataset(name='ogbl-biokg')
+        dataset = DglLinkPropPredDataset(name='ogbl-biokg', root=ogb_path)
         g = dataset[0]
     elif name == 'debug_hetero':
         g = dgl.heterograph({

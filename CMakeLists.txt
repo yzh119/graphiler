@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15.0)
+cmake_minimum_required(VERSION 3.24)
 project(graphiler LANGUAGES CUDA CXX)
 
 find_package(Torch REQUIRED)
@@ -23,7 +23,7 @@ add_library(graphiler SHARED
     )
     
 # Todo: more architectures
-set_target_properties(graphiler PROPERTIES CUDA_ARCHITECTURES "70")
+set_target_properties(graphiler PROPERTIES CUDA_ARCHITECTURES native)
 
 # Enable C++14
 target_compile_features(graphiler PRIVATE cxx_std_14)

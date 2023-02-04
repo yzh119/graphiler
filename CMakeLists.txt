@@ -23,7 +23,7 @@ add_library(graphiler SHARED
     )
     
 # Todo: more architectures
-set_target_properties(graphiler PROPERTIES CUDA_ARCHITECTURES "70;75;80;86")
+set_target_properties(graphiler PROPERTIES CUDA_ARCHITECTURES native)
 
 # Enable C++14
 target_compile_features(graphiler PRIVATE cxx_std_14)
